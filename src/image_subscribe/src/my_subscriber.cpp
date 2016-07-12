@@ -32,14 +32,11 @@ int nancheck_offset_x, nancheck_offset_y;
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-  // boost::mutex::scoped_lock lock(g_image_mutex);
-  cv_bridge::CvImageConstPtr cv_ptr;
+  cv_bridge::CvImagePtr cv_ptr;
   try
   {
-    cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
+    cv_ptr = cv_bridge::toCvCopy(msg, "bgr8");
     // currentImage = cv_ptr->image;
-    cv::imshow("view", cv_ptr->image);
-    cv::waitKey(30);
   }
   catch (cv_bridge::Exception& e)
   {
@@ -47,7 +44,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
   }
   // if (!cv_ptr->image.empty())
   // {
-  //   currentImage = cv_ptr->image;
+    currentImage = cv_ptr->image;
   // }
 }
 
@@ -71,7 +68,7 @@ void color_detection(cv::Mat img)
 
   cv::Mat imgThresholded;
 
-  cv::inRange(imgHSV,cv::Scalar(iLowH, iLowS, iLowV),cv::Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+  cv::inRange(imgHSV, cv::Scalar(iLowH, iLowS, iLowV), cv::Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
 
   //morphological opening (remove small objects from the foreground)
   cv::erode(imgThresholded, imgThresholded, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)) );
@@ -95,7 +92,10 @@ void color_detection(cv::Mat img)
 
   float offset_x = (1 - 2 * center.x / imgThresholded.cols);
   float offset_y = (1 - 2 * center.y / imgThresholded.rows);
+
   cv::circle(imgROI, cv::Point(imgThresholded.cols / 2, imgThresholded.rows / 2), 10, CV_RGB(255, 0, 0));
+
+
 
   ROS_INFO("offset_x = %f \n", offset_x);
   ROS_INFO("offset_y = %f \n", offset_y);
@@ -108,7 +108,7 @@ void color_detection(cv::Mat img)
   else
   {
     cv::circle(imgROI, cv::Point(320 - (offset_x * 320), 240 - (offset_y * 240)), 20, CV_RGB(255, 0, 255));
-    cv::line(imgROI, cv::Point( imgThresholded.cols / 2, imgThresholded.rows / 2 ), cv::Point(320 - (offset_x * 320), 240 - (offset_y * 240)), CV_RGB(255,0,100), 3, 2 );
+    cv::line(imgROI, cv::Point( imgThresholded.cols / 2, imgThresholded.rows / 2 ), cv::Point(320 - (offset_x * 320), 240 - (offset_y * 240)), CV_RGB(255, 0, 100), 3, 2 );
   }
   // cv::circle(imgThresholded,Point((offset_x*,imgThresholded.rows/2),4,cv::Scalar( 0, 0,255),10,8);
   // if (offset_x == 'nan')
@@ -172,19 +172,18 @@ int main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
   ros::TransportHints ros_hints;
   image_transport::TransportHints hints("jpeg", ros_hints.udp());
-  image_transport::Subscriber sub = it.subscribe("camera/image",1, imageCallback,hints);
+  image_transport::Subscriber sub = it.subscribe("camera/image", 1, imageCallback, hints);
   // image_transport::Subscriber sub = it.subscribe("camera/image",1, imageCallback);
-  ros::Rate loop_rate(1000);
+  ros::Rate loop_rate(30);
   while (ros::ok())
   {
     if ( !currentImage.empty() )
     {
-      // ROS_INFO("Copy Completed");
-      //IplImage copy = currentImage;
-      // cv::imshow("view", currentImage);
+      ROS_INFO("Copy Completed");
+      cv::imshow("view", currentImage);
       // bcimg = brightness_and_contrast(currentImage);
       // color_detection(bcimg);
-      // cv::waitKey(30);
+      cv::waitKey(51);
     }
     ros::spinOnce();
     // ros::spin();
