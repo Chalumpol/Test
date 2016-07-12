@@ -1,0 +1,8 @@
+prefix=/home/chalumpol-linux/catkin_ws/devel
+
+Name: image_subscribe
+Description: Description of image_subscribe
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/chalumpol-linux/catkin_ws/devel/lib 
+Requires: 

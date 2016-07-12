@@ -1,0 +1,2 @@
+beginner_tutorials:image_subscribe
+-DCATKIN_DEVEL_PREFIX=/home/chalumpol-linux/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/chalumpol-linux/catkin_ws/install -G Unix Makefiles

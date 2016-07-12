@@ -1,0 +1,8 @@
+prefix=/home/chalumpol-linux/catkin_ws/install
+
+Name: ros_opencv_sub
+Description: Description of ros_opencv_sub
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/chalumpol-linux/catkin_ws/install/lib 
+Requires: 
